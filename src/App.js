@@ -83,16 +83,27 @@ var MainContainer = React.createClass({
         })
       )
     },
-
+    renderItemsAvailable: function(){
+      var availableStand = this.props.availableStand
+      return(
+        Object.keys(availableStand).map((item, key)=>{
+          return <NewStand
+            revenue={availableStand[item].revenue}
+            quantity={availableStand[item].quantityStand}
+            time={availableStand[item].time}
+            name={availableStand[item].name}
+            standPrice={availableStand[item].standPrice}/>
+        })
+      )
+    },
     render: function(){
-      // var buyedStandKey = this.props.buyedStand[item]
       return(
         <div>
           <Capital monto='50000' />
           <div className='row'>
             {this.renderItemsGame()}
           </div>
-          <NewStand/>
+          {this.renderItemsAvailable()}
         </div>
       )
     }
@@ -205,8 +216,8 @@ var MainContainer = React.createClass({
       <div className="newstand">
         <img src="http://placehold.it/50x50" role="presentation" />
         <div>
-          <span>Pets </span>
-          <span> $45.00</span>
+          <span>{this.props.name} </span>
+          <span>${this.props.standPrice}</span>
         </div>
       </div>
     )
