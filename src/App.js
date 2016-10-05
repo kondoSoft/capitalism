@@ -10,12 +10,12 @@ class App extends Component {
           revenue:10,
           standPrice:1000,
           quantityStand:1,
-          time:500,
+          time:100,
           name: 'lemonade'
         },
         newspaper:{
           revenue:100,
-          standPrice:1000,
+          standPrice:1010,
           quantityStand:1,
           time:1500,
           name:'newspaper'
@@ -24,14 +24,14 @@ class App extends Component {
           revenue:150,
           standPrice:1050,
           quantityStand:1,
-          time:1000,
+          time:10000,
           name:'donutShop'
         },
         pizzaShop:{
-          revenue:150,
-          standPrice:1050,
+          revenue:205,
+          standPrice:1150,
           quantityStand:1,
-          time:1000,
+          time:2000,
           name:'pizzaShop'
         }
       },
@@ -70,120 +70,147 @@ class App extends Component {
 }
 
 var MainContainer = React.createClass({
-
-  render: function(){
-    console.log(this.props.availableStand);
+  renderItemsGame: function (){
+    var buyedStand = this.props.buyedStand
     return(
-      <div>
-        <Capital monto='50000' />
-        <div className='row'>
-          <GameItem />
+      Object.keys(buyedStand).map((item, key)=>{
+        return <GameItem key={key}
+          revenue={buyedStand[item].revenue}
+          quantity={buyedStand[item].quantityStand}
+          time={buyedStand[item].time}
+          name={buyedStand[item].name}
+          standPrice={buyedStand[item].standPrice}/>
+        })
+      )
+    },
+
+    render: function(){
+      // var buyedStandKey = this.props.buyedStand[item]
+      return(
+        <div>
+          <Capital monto='50000' />
+          <div className='row'>
+            {this.renderItemsGame()}
+          </div>
+          <NewStand/>
         </div>
-      </div>
-    )
-  }
-})
+      )
+    }
+  })
 
-var GameItem = React.createClass({
-  render: function(){
-    return(
-      <div>
-        <div className='rowContainer'>
-          <BarProgress time={1000}/>
-          <Thumbnail />
+  var GameItem = React.createClass({
+    render: function(){
+      return(
+
+        <div>
+          <div className='rowContainer'>
+            <BarProgress time={this.props.time}/>
+            <Thumbnail quantity={this.props.quantity} />
+          </div>
+          <RevenueBuyStandContainer revenue={this.props.revenue} standPrice={this.props.standPrice}/>
         </div>
-        <RevenueBuyStandContainer />
-      </div>
-    )
-  }
-})
+      )
+    }
+  })
 
-var BarProgress = React.createClass({
-  getInitialState(){
-    return({
-      width: 0
-    })
-  },
-  cargar(time){
-    var tiempoInicio = Date.now()
-    var inter = setInterval(()=>{
-      var tiempoActual = Date.now()
-      var tiempoTranscurrido = tiempoActual - tiempoInicio;
-      var porcentaje = tiempoTranscurrido / time * 100
-      console.log(porcentaje);
-      if(this.state.width >= 100){
-        clearInterval(inter)
-        this.setState({width:0})
-      }else{
-        this.setState({width:porcentaje})
-      }
-    }, 10)
-  },
-  render() {
-    return(
-      <div className='progressBar'>
-        <div id="myProgress">
-          <div id="myBar" style={{width:this.state.width + '%'}}></div>
-          <div id="label">00:10s</div>
+  var BarProgress = React.createClass({
+    getInitialState(){
+      return({
+        width: 0
+      })
+    },
+    cargar(time){
+      var tiempoInicio = Date.now()
+      var inter = setInterval(()=>{
+        var tiempoActual = Date.now()
+        var tiempoTranscurrido = tiempoActual - tiempoInicio;
+        var porcentaje = tiempoTranscurrido / time * 100
+        console.log(porcentaje);
+        if(this.state.width >= 100){
+          clearInterval(inter)
+          this.setState({width:0})
+        }else{
+          this.setState({width:porcentaje})
+        }
+      }, 10)
+    },
+    render: function() {
+      return(
+        <div  className='progressBar'>
+          <div id="myProgress" onClick={()=>{this.cargar(this.props.time)}}>
+            <div id="myBar" style={{width:this.state.width + '%'}}></div>
+            <div id="label">00:10s</div>
+          </div>
         </div>
-        <button onClick={()=>{this.cargar(this.props.time)}}>Iniciar</button>
-      </div>
+      )
+    }
+  })
 
-    )
-  }
-})
+  var Capital = React.createClass({
+    render: function() {
+      return(
+        <div className='capital'>
+          <span>{this.props.monto}</span>
+        </div>
+      )
+    }
+  })
 
-var Capital = React.createClass({
-  render: function() {
-    return(
-      <div className='capital'>
-        <span>{this.props.monto}</span>
-      </div>
-    )
-  }
-})
+  var Thumbnail = React.createClass({
+    render: function(){
+      return(
+        <div className="thumb">
+          <img src="http://placehold.it/50x50" role="presentation" />
+          <div>{this.props.quantity}</div>
+        </div>
+      )
+    }
+  })
 
-var Thumbnail = React.createClass({
-  render: function(){
-    return(
-      <div className="thumb">
+  var RevenueBuyStandContainer = React.createClass({
+    render: function(){
+      return(
+        <div className='rev'>
+          <BuyStand standPrice={this.props.standPrice}/>
+          <Revenue  revenue={this.props.revenue} />
+        </div>
+      )
+    }
+  })
+
+  var Revenue = React.createClass({
+    render:function(){
+      return(
+        <div className='revenue'>
+          <span>${this.props.revenue}</span>
+        </div>
+      )
+    }
+  })
+
+  var BuyStand = React.createClass({
+    render: function(){
+      return(
+        <div className="buystand">
+          <span>buy x1 </span>
+          <span>${this.props.standPrice}</span>
+        </div>
+      )
+    }
+  })
+
+  var NewStand = React.createClass({
+    render:function(){
+      return(
+      <div className="newstand">
         <img src="http://placehold.it/50x50" role="presentation" />
-        <div>100</div>
-      </div>
-        )
-  }
-})
-
-var RevenueBuyStandContainer = React.createClass({
-  render: function(){
-    return(
-      <div className='rev'>
-        <BuyStand />
-        <Revenue />
+        <div>
+          <span>Pets </span>
+          <span> $45.00</span>
+        </div>
       </div>
     )
-  }
-})
+    }
+  })
 
-var Revenue = React.createClass({
-  render:function(){
-    return(
-      <div className='revenue'>
-        <span>$1000.00</span>
-      </div>
-    )
-  }
-})
-
-var BuyStand = React.createClass({
-  render: function(){
-    return(
-      <div className="buystand">
-        <span>buy x1 </span>
-        <span> $100.00</span>
-      </div>
-    )
-  }
-})
-
-export default App;
+  export default App;

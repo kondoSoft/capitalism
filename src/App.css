@@ -89,3 +89,14 @@ border: 2px solid green;
   position: relative;
   top: 15px;
 }
+
+.newstand{
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.newstand img{
+  border-radius: 50%;
+  margin-right: 50px;
+}
