@@ -5,7 +5,7 @@
 
 #myProgress{
   position:relative;
-  width: 100%;
+  width: 95%;
   height: 30px;
   background: lightgray;
 }
@@ -14,10 +14,78 @@
   width: 0%;
   height: 100%;
   background: green;
+  z-index: 0;
 }
 
 #label {
     text-align: center; /* If you want to center it */
     line-height: 30px; /* Set the line-height to the same as the height of the progress bar container, to center it vertically */
-    color: white;
+    color: black;
+    z-index: 2;
+}
+
+/*.capital{
+  border: 1px solid red;
+}
+
+.progressBar{
+  border: 1px solid green;
+}
+
+.thumb{
+  border: 1px solid blue;
+}
+
+
+.buystand{
+border: 2px solid green;
+}*/
+
+.thumb img {
+  border-radius: 50%;
+}
+.row{
+  border: 1px solid red;
+}
+.capital{
+  text-align: center;
+}
+.thumb{
+  display: flex;
+  flex-direction: column;
+  justify-content:flex-start;
+}
+.thumb div{
+  background: cornflowerblue;
+  text-align: center;
+}
+.buystand{
+  text-align: left;
+  border: 1px solid red;
+  padding: 5px;
+  box-sizing: border-box;
+
+}
+.rev{
+  text-align: left;
+  color: red;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.revenue span{
+  position: relative;
+  top: 5px;
+}
+
+.rowContainer{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.progressBar{
+  width: 100%;
+  position: relative;
+  top: 15px;
 }
