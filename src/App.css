@@ -44,9 +44,6 @@ border: 2px solid green;
 .thumb img {
   border-radius: 50%;
 }
-.row{
-  border: 1px solid red;
-}
 .capital{
   text-align: center;
 }
@@ -60,11 +57,11 @@ border: 2px solid green;
   text-align: center;
 }
 .buystand{
-  text-align: left;
   border: 1px solid red;
-  padding: 5px;
-  box-sizing: border-box;
-
+  padding: 5px
+}
+.buystand span{
+  display: block;
 }
 .rev{
   text-align: left;
