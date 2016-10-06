@@ -12,7 +12,8 @@ class App extends Component {
           quantityStand:1,
           time:100,
           name: 'lemonade',
-          width: 0
+          width: 0,
+          running: false
         },
         newspaper:{
           revenue:100,
@@ -20,7 +21,8 @@ class App extends Component {
           quantityStand:1,
           time:1500,
           name:'newspaper',
-          width: 0
+          width: 0,
+          running: false
         },
         donutShop:{
           revenue:150,
@@ -28,7 +30,8 @@ class App extends Component {
           quantityStand:1,
           time:10000,
           name:'donutShop',
-          width: 0
+          width: 0,
+          running: false
         },
         pizzaShop:{
           revenue:205,
@@ -36,7 +39,8 @@ class App extends Component {
           quantityStand:1,
           time:2000,
           name:'pizzaShop',
-          width: 0
+          width: 0,
+          running: false
         }
       },
       availableStand:{
@@ -46,7 +50,8 @@ class App extends Component {
           quantityStand:1,
           time:1000,
           name:'bank',
-          width: 0
+          width: 0,
+          running: false
         },
         movieStudio:{
           revenue:150,
@@ -54,7 +59,8 @@ class App extends Component {
           quantityStand:1,
           time:1000,
           name:'movieStudio',
-          width: 0
+          width: 0,
+          running: false
         },
         oilCompany:{
           revenue:150,
@@ -62,40 +68,54 @@ class App extends Component {
           quantityStand:1,
           time:1000,
           name:'oilCompany',
-          width: 0
+          width: 0,
+          running: false
         }
       },
       capital: 0,
     }
     this.addStand = this.addStand.bind(this)
     this.loading = this.loading.bind(this)
+    this.toogleRunning = this.toogleRunning.bind(this)
   }
   loading(time, name, capital){
     var sumCapital = capital
     var state =  this.state
+    var running = state.buyedStand[name].running
     var newState = state.buyedStand
-    var tiempoInicio = Date.now()
-    var inter = setInterval(()=>{
-      var tiempoActual = Date.now()
-      var tiempoTranscurrido = tiempoActual - tiempoInicio;
-      var porcentaje = tiempoTranscurrido / time * 100
-      if(state.buyedStand[name].width >= 100){
-        clearInterval(inter)
-        sumCapital += this.state.buyedStand[name].revenue
-        this.setState({capital: sumCapital})
-        newState[name].width = 0
-        this.setState({buyedStand:newState})
-      }else{
-        newState[name].width = porcentaje
-        this.setState({buyedStand:newState})
-      }
-    }, 10)
+    if(running === false){
+      console.log('cargando');
+      this.toogleRunning(name)
+      var tiempoInicio = Date.now()
+      var inter = setInterval(()=>{
+        var tiempoActual = Date.now()
+        var tiempoTranscurrido = tiempoActual - tiempoInicio;
+        var porcentaje = tiempoTranscurrido / time * 100
+        if(state.buyedStand[name].width >= 100){
+          clearInterval(inter)
+          sumCapital += this.state.buyedStand[name].revenue
+          this.setState({capital: sumCapital})
+          newState[name].width = 0
+          this.setState({buyedStand:newState})
+          this.toogleRunning(name)
+        }else{
+          newState[name].width = porcentaje
+          this.setState({buyedStand:newState})
+        }
+      }, 10)
+    }
   }
   addStand(name) {
     var state = this.state
     var newState = state.buyedStand
     newState[name].quantityStand++
     this.setState({buyedStand:newState})
+  }
+  toogleRunning(key){
+    var state = this.state
+    state.buyedStand[key].running = !state.buyedStand[key].running
+    this.setState(state)
+    return state.buyedStand[key].running
   }
   render() {
     return (
