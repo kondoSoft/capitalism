@@ -24,23 +24,6 @@
     z-index: 2;
 }
 
-/*.capital{
-  border: 1px solid red;
-}
-
-.progressBar{
-  border: 1px solid green;
-}
-
-.thumb{
-  border: 1px solid blue;
-}
-
-
-.buystand{
-border: 2px solid green;
-}*/
-
 .thumb img {
   border-radius: 50%;
 }
@@ -91,6 +74,15 @@ border: 2px solid green;
   margin-top: 10px;
   display: flex;
   align-items: center;
+  background: #6d6d6d;
+  opacity: 0.5;
+  color: white;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.newstand.active{
+  background: #F44336;
+  opacity: 1;
 }
 
 .newstand img{

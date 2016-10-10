@@ -7,51 +7,66 @@ class App extends Component {
     this.state = {
       buyedStand:{
         lemonade:{
-          revenue:10,
-          standPrice:1000,
-          quantityStand:1,
-          time:100,
           name: 'lemonade',
+          revenue:20,
+          standPrice:200,
+          quantityStand:1,
+          time:500,
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.2,
+          newStandPrice:1000,
+          initTime: 0
         }
       },
       availableStand:{
         newspaper:{
           revenue:100,
-          standPrice:1010,
+          standPrice:250,
           quantityStand:1,
           time:1500,
           name:'newspaper',
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.8,
+          newStandPrice:1050,
+          initTime: 0
         },
         donutShop:{
           revenue:150,
-          standPrice:1050,
+          standPrice:400,
           quantityStand:1,
           time:10000,
           name:'donutShop',
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.8,
+          newStandPrice:1500,
+          initTime: 0
         },
         pizzaShop:{
           revenue:205,
-          standPrice:1150,
+          standPrice:750,
           quantityStand:1,
           time:2000,
           name:'pizzaShop',
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.8,
+          newStandPrice:1750,
+          initTime: 0
         },
         bank:{
           revenue:150,
-          standPrice:1050,
+          standPrice:830,
           quantityStand:1,
           time:1000,
           name:'bank',
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.8,
+          newStandPrice:3000,
+          initTime: 0
         },
         movieStudio:{
           revenue:150,
@@ -60,73 +75,100 @@ class App extends Component {
           time:1000,
           name:'movieStudio',
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.8,
+          newStandPrice:4200,
+          initTime: 0
         },
         oilCompany:{
           revenue:150,
-          standPrice:1050,
+          standPrice:1250,
           quantityStand:1,
           time:1000,
           name:'oilCompany',
           width: 0,
-          running: false
+          running: false,
+          indexRevenue: 1.8,
+          newStandPrice:10000,
+          initTime: 0
         }
       },
       capital: 0,
     }
     this.addStand = this.addStand.bind(this)
     this.loading = this.loading.bind(this)
-    this.toogleRunning = this.toogleRunning.bind(this)
     this.buyStand = this.buyStand.bind(this)
   }
   sumCapital(revenue){
     var total = this.state.capital + revenue
     this.setState({capital: total})
   }
-  loading(time, name, capital){
-    var state =  this.state
-    var running = state.buyedStand[name].running
-    var newState = state.buyedStand
-    if(running === false){
-      this.toogleRunning(name)
-      var tiempoInicio = Date.now()
-      var interval = setInterval(()=>{
-        var tiempoActual = Date.now()
-        var tiempoTranscurrido = tiempoActual - tiempoInicio;
-        var porcentaje = tiempoTranscurrido / time * 100
-        if(state.buyedStand[name].width >= 100){
-          clearInterval(interval)
-          newState[name].width = 0
-          this.setState({buyedStand:newState})
-          this.toogleRunning(name)
-          this.sumCapital(state.buyedStand[name].revenue)
-        }else{
-          newState[name].width = porcentaje
-          this.setState({buyedStand:newState})
-        }
-      }, 10)
-    }
-  }
   addStand(name) {
     var state = this.state
-    var newState = state.buyedStand
-    newState[name].quantityStand++
-    this.setState({buyedStand:newState})
+    var buyedStand = state.buyedStand
+    var capital = state.capital
+    var total
+    var revenue
+    var standPrice
+    if (capital >= buyedStand[name].standPrice) {
+      total = capital - buyedStand[name].standPrice
+      buyedStand[name].quantityStand++
+      revenue = Math.round(buyedStand[name].revenue + (buyedStand[name].quantityStand * buyedStand[name].indexRevenue))
+      buyedStand[name].revenue = revenue
+      standPrice = buyedStand[name].standPrice + (buyedStand[name].quantityStand * 2)
+      buyedStand[name].standPrice =  standPrice
+      this.setState({capital:total})
+      this.setState({buyedStand:buyedStand})
+    }
   }
-  toogleRunning(key){
+  loading(key){
     var state = this.state
-    state.buyedStand[key].running = !state.buyedStand[key].running
-    this.setState(state)
-    return state.buyedStand[key].running
+    if (state.buyedStand[key].running === false) {
+      var initTime = Date.now()
+      state.buyedStand[key].initTime = initTime
+      state.buyedStand[key].running = !state.buyedStand[key].running
+    }
   }
   buyStand(key){
     var state = this.state
     var availableStand = state.availableStand
     var buyedStand = state.buyedStand
-    buyedStand[key] = availableStand[key]
-    this.setState({buyedStand:buyedStand})
-    delete availableStand[key]
-    this.setState({availableStand: availableStand})
+    var capital = state.capital
+    var total
+    if (capital >= availableStand[key].newStandPrice) {
+      total = capital - availableStand[key].newStandPrice
+      buyedStand[key] = availableStand[key]
+      this.setState({buyedStand:buyedStand})
+      delete availableStand[key]
+      this.setState({capital:total})
+    }
+  }
+  componentDidMount(){
+    setInterval(()=>{
+      // ßßconsole.log(cuadros++);
+      var stands = this.state.buyedStand
+      Object.keys(stands).map((key)=>{
+        if (stands[key].initTime !== 0){
+          // Do what ever operation you need...
+            var tiempoActual = Date.now()
+            var tiempoTranscurrido = tiempoActual - stands[key].initTime;
+            var porcentaje = tiempoTranscurrido / stands[key].time * 100
+            if(stands[key].width >= 100){
+              stands[key].width = 0
+              stands[key].initTime = 0
+              stands[key].running = !stands[key].running
+              this.setState({buyedStand:stands})
+              this.sumCapital(stands[key].revenue)
+            }else{
+              var percent = Math.floor(porcentaje)
+              percent = (percent > 100)? 100:percent;
+              stands[key].width = percent
+              this.setState({buyedStand:stands})
+            }
+        }
+      })
+    },1000/30)
+
   }
   render() {
     return (
@@ -177,6 +219,8 @@ var MainContainer = React.createClass({
             name={availableStand[item].name}
             standPrice={availableStand[item].standPrice}
             buyStand={this.props.buyStand}
+            newStandPrice={availableStand[item].newStandPrice}
+            capital={this.props.capital}
           />
         )
         })
@@ -230,7 +274,7 @@ var MainContainer = React.createClass({
     render: function() {
       return(
         <div  className='progressBar'>
-          <div id="myProgress" onClick={()=>{this.props.loading(this.props.time, this.props.name,this.props.capital)}}>
+          <div id="myProgress" onClick={()=>{this.props.loading(this.props.name)}}>
             <div id="myBar" style={{width:this.props.width + '%'}}></div>
             <div id="label">{this.props.time}</div>
           </div>
@@ -243,7 +287,7 @@ var MainContainer = React.createClass({
     render: function() {
       return(
         <div className='capital'>
-          <span>{this.props.monto}</span>
+          <span>${this.props.monto}</span>
         </div>
       )
     }
@@ -251,10 +295,9 @@ var MainContainer = React.createClass({
 
   var Thumbnail = React.createClass({
     render: function(){
-      var time = this.props.time
       var name = this.props.name
       return(
-        <div className="thumb" onClick={()=>{this.props.loading(time, name)}}>
+        <div className="thumb" onClick={()=>{this.props.loading(name)}}>
           <img src="http://placehold.it/50x50" alt={name} role="presentation" />
           <div>{this.props.quantity}</div>
         </div>
@@ -296,12 +339,15 @@ var MainContainer = React.createClass({
 
   var NewStand = React.createClass({
     render:function(){
+      var capital = this.props.capital
+      var newStandPrice = this.props.newStandPrice
+      var activeClass = (capital>=newStandPrice)? 'newstand active':'newstand';
       return(
-      <div className="newstand">
-        <img src="http://placehold.it/50x50" role="presentation" onClick={()=>{this.props.buyStand(this.props.name)}} />
+      <div className={activeClass} onClick={()=>{this.props.buyStand(this.props.name)}}>
+        <img src="http://placehold.it/50x50" role="presentation"/>
         <div>
-          <span>{this.props.name} </span>
-          <span>${this.props.standPrice}</span>
+          <span>{this.props.name}</span>
+          <span>${newStandPrice}</span>
         </div>
       </div>
     )
