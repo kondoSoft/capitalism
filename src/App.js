@@ -14,7 +14,9 @@ class App extends Component {
           name: 'lemonade',
           width: 0,
           running: false
-        },
+        }
+      },
+      availableStand:{
         newspaper:{
           revenue:100,
           standPrice:1010,
@@ -41,9 +43,7 @@ class App extends Component {
           name:'pizzaShop',
           width: 0,
           running: false
-        }
-      },
-      availableStand:{
+        },
         bank:{
           revenue:150,
           standPrice:1050,
@@ -77,27 +77,29 @@ class App extends Component {
     this.addStand = this.addStand.bind(this)
     this.loading = this.loading.bind(this)
     this.toogleRunning = this.toogleRunning.bind(this)
+    this.buyStand = this.buyStand.bind(this)
+  }
+  sumCapital(revenue){
+    var total = this.state.capital + revenue
+    this.setState({capital: total})
   }
   loading(time, name, capital){
-    var sumCapital = capital
     var state =  this.state
     var running = state.buyedStand[name].running
     var newState = state.buyedStand
     if(running === false){
-      console.log('cargando');
       this.toogleRunning(name)
       var tiempoInicio = Date.now()
-      var inter = setInterval(()=>{
+      var interval = setInterval(()=>{
         var tiempoActual = Date.now()
         var tiempoTranscurrido = tiempoActual - tiempoInicio;
         var porcentaje = tiempoTranscurrido / time * 100
         if(state.buyedStand[name].width >= 100){
-          clearInterval(inter)
-          sumCapital += this.state.buyedStand[name].revenue
-          this.setState({capital: sumCapital})
+          clearInterval(interval)
           newState[name].width = 0
           this.setState({buyedStand:newState})
           this.toogleRunning(name)
+          this.sumCapital(state.buyedStand[name].revenue)
         }else{
           newState[name].width = porcentaje
           this.setState({buyedStand:newState})
@@ -117,6 +119,15 @@ class App extends Component {
     this.setState(state)
     return state.buyedStand[key].running
   }
+  buyStand(key){
+    var state = this.state
+    var availableStand = state.availableStand
+    var buyedStand = state.buyedStand
+    buyedStand[key] = availableStand[key]
+    this.setState({buyedStand:buyedStand})
+    delete availableStand[key]
+    this.setState({availableStand: availableStand})
+  }
   render() {
     return (
       <div className="container">
@@ -126,6 +137,7 @@ class App extends Component {
           buyedStand={this.state.buyedStand}
           availableStand={this.state.availableStand}
           loading={this.loading}
+          buyStand={this.buyStand}
         />
       </div>
     );
@@ -157,12 +169,16 @@ var MainContainer = React.createClass({
       var availableStand = this.props.availableStand
       return(
         Object.keys(availableStand).map((item, key)=>{
-          return <NewStand key={key}
+          return (
+          <NewStand key={key}
             revenue={availableStand[item].revenue}
             quantity={availableStand[item].quantityStand}
             time={availableStand[item].time}
             name={availableStand[item].name}
-            standPrice={availableStand[item].standPrice}/>
+            standPrice={availableStand[item].standPrice}
+            buyStand={this.props.buyStand}
+          />
+        )
         })
       )
     },
@@ -192,7 +208,12 @@ var MainContainer = React.createClass({
               name={this.props.name}
               capital={this.props.capital}
             />
-            <Thumbnail name={this.props.name} quantity={this.props.quantity} />
+            <Thumbnail
+              name={this.props.name}
+              quantity={this.props.quantity}
+              loading={this.props.loading}
+              time={this.props.time}
+            />
           </div>
           <RevenueBuyStandContainer
             name={this.props.name}
@@ -230,9 +251,11 @@ var MainContainer = React.createClass({
 
   var Thumbnail = React.createClass({
     render: function(){
+      var time = this.props.time
+      var name = this.props.name
       return(
-        <div className="thumb">
-          <img src="http://placehold.it/50x50" alt={this.props.name} role="presentation" />
+        <div className="thumb" onClick={()=>{this.props.loading(time, name)}}>
+          <img src="http://placehold.it/50x50" alt={name} role="presentation" />
           <div>{this.props.quantity}</div>
         </div>
       )
@@ -275,7 +298,7 @@ var MainContainer = React.createClass({
     render:function(){
       return(
       <div className="newstand">
-        <img src="http://placehold.it/50x50" role="presentation" />
+        <img src="http://placehold.it/50x50" role="presentation" onClick={()=>{this.props.buyStand(this.props.name)}} />
         <div>
           <span>{this.props.name} </span>
           <span>${this.props.standPrice}</span>
